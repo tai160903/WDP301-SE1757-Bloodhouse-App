@@ -67,9 +67,9 @@ const DonationDetailScreen = ({ route }) => {
             email: donation.userId?.email || 'N/A',
           },
           staff: {
-            id: donation.staffId?._id || donation.staffId,
-            name: donation.staffId?.userId?.fullName || "N/A",
-            avatar: donation.staffId?.userId?.avatar || "https://png.pngtree.com/png-clipart/20240321/original/pngtree-avatar-job-student-flat-portrait-of-man-png-image_14639685.png",
+            id: donation.createdBy?._id || donation.createdBy,
+            name: donation.createdBy?.userId?.fullName || "N/A",
+            avatar: donation.createdBy?.userId?.avatar || "https://png.pngtree.com/png-clipart/20240321/original/pngtree-avatar-job-student-flat-portrait-of-man-png-image_14639685.png",
           },
           bloodGroup: {
             id: donation.bloodGroupId?._id,

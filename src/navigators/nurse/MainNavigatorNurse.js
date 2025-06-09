@@ -8,6 +8,7 @@ import DonationCreateFormScreen from "@/screens/nurse/donation/donationCreateFor
 import DonationDetailScreen from "@/screens/nurse/donation/donationDetailScreen";
 import DonorStatusScreen from "@/screens/nurse/donation/DonorStatusScreen";
 import ScannerScreen from "@/screens/nurse/ScannerScreen";
+import GiftDistributionScreen from "@/screens/nurse/gift/GiftDistributionScreen";
 
 const MainNavigatorNurse = () => {
   const Stack = createNativeStackNavigator();
@@ -28,6 +29,7 @@ const MainNavigatorNurse = () => {
       <Stack.Screen name="DonationCreateForm" component={DonationCreateFormScreen} />
       <Stack.Screen name="DonationDetail" component={DonationDetailScreen} />
       <Stack.Screen name="DonorStatus" component={DonorStatusScreen} />
+      <Stack.Screen name="GiftDistribution" component={GiftDistributionScreen} />
     </Stack.Navigator>
   );
 };

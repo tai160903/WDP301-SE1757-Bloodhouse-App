@@ -13,6 +13,7 @@ import {
   TextInput,
   Modal,
   Dimensions,
+  Alert,
 } from "react-native";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { formatDateTime } from "@/utils/formatHelpers";
@@ -22,7 +23,6 @@ import viLocale from "date-fns/locale/vi";
 import { Calendar } from 'react-native-calendars';
 import { getStartOfWeek, getWeekDays } from '@/utils/dateFn';
 import bloodDonationAPI from "@/apis/bloodDonation";
-import { DONATION_STATUS, getStatusName, getStatusColor } from "@/constants/donationStatus";
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -79,7 +79,7 @@ export default function DonationListScreen() {
             phone: donation.userId?.phone || 'N/A',
           },
           nurse: {
-            name: donation.staffId?.userId?.fullName || "Chưa phân công",
+            name: donation.createdBy?.userId?.fullName || "Chưa phân công",
           },
           facility: {
             name: donation.bloodDonationRegistrationId?.facilityId?.name || "N/A",
@@ -96,6 +96,12 @@ export default function DonationListScreen() {
             temperature: 36.5,
           },
           notes: donation.notes || "",
+          giftDistributed: !!donation.giftPackageId, // Check if gift package has been distributed
+          giftPackage: donation.giftPackageId ? {
+            id: donation.giftPackageId._id,
+            name: donation.giftPackageId.name,
+            description: donation.giftPackageId.description
+          } : null,
           originalData: donation, // Keep original data for updates
         }));
 
@@ -253,15 +259,54 @@ export default function DonationListScreen() {
                   item.originalData?.status === 'completed' ? 'visibility' : 
                   'info'
                 } 
-                size={18} 
+                size={16} 
                 color="#FF6B6B" 
               />
               <Text style={styles.actionText}>
-                {item.originalData?.status === 'donating' ? 'Cập nhật thông tin' : 
-                 item.originalData?.status === 'completed' ? 'Xem chi tiết' : 
-                 'Chi tiết'}
+                {item.originalData?.status === 'donating' ? 'Cập nhật' : 
+                 item.originalData?.status === 'completed' ? 'Chi tiết' : 
+                 'Xem'}
               </Text>
             </TouchableOpacity>
+
+            {/* Show gift distribution button for completed donations that haven't received gifts */}
+            {item.originalData?.status === 'completed' && !item.giftDistributed && (
+              <TouchableOpacity 
+                style={[styles.actionBtn, styles.giftActionBtn]}
+                onPress={() => {
+                  navigation.navigate('GiftDistribution', { 
+                    donationId: item.id,
+                    donorName: item.donor.name,
+                    bloodType: item.donor.bloodType,
+                    donationData: item.originalData
+                  });
+                }}
+              >
+                <MaterialCommunityIcons name="gift" size={16} color="#8B5CF6" />
+                <Text style={[styles.actionText, styles.giftActionText]}>
+                  Phát quà
+                </Text>
+              </TouchableOpacity>
+            )}
+
+            {/* Show gift status for completed donations that have received gifts */}
+            {item.originalData?.status === 'completed' && item.giftDistributed && (
+              <TouchableOpacity 
+                style={[styles.actionBtn, styles.giftCompletedBtn]}
+                onPress={() => {
+                  Alert.alert(
+                    'Thông tin quà tặng',
+                    `Đã phát gói quà: ${item.giftPackage?.name || 'Không xác định'}`,
+                    [{ text: 'OK' }]
+                  );
+                }}
+              >
+                <MaterialCommunityIcons name="gift-outline" size={16} color="#2ED573" />
+                <Text style={[styles.actionText, styles.giftCompletedText]}>
+                  Đã phát
+                </Text>
+              </TouchableOpacity>
+            )}
             
             {/* Show post-donation care button for completed donations */}
             {item.originalData?.status === 'completed' && (
@@ -274,9 +319,9 @@ export default function DonationListScreen() {
                   });
                 }}
               >
-                <MaterialCommunityIcons name="medical-bag" size={18} color="#2ED573" />
+                <MaterialCommunityIcons name="medical-bag" size={16} color="#2ED573" />
                 <Text style={[styles.actionText, styles.secondaryActionText]}>
-                  Kiểm tra sau hiến
+                  Kiểm tra
                 </Text>
               </TouchableOpacity>
             )}
@@ -741,12 +786,16 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     borderWidth: 1,
     borderColor: "#F0F0F0",
+    minHeight: 180,
   },
   cardHeader: {
     flexDirection: "row",
     alignItems: "flex-start",
     justifyContent: "space-between",
-    marginBottom: 12,
+    marginBottom: 16,
+    paddingBottom: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: "#F5F5F5",
   },
   donorInfo: {
     flexDirection: "row",
@@ -782,36 +831,48 @@ const styles = StyleSheet.create({
   textContainer: {
     flex: 1,
     marginLeft: 16,
+    justifyContent: 'space-between',
   },
   donorName: {
     fontSize: 17,
     fontWeight: "bold",
     color: "#2D3748",
-    marginBottom: 4,
+    marginBottom: 6,
+    lineHeight: 22,
   },
   detailsRow: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 4,
+    marginBottom: 6,
+    paddingVertical: 1,
   },
   details: {
     fontSize: 14,
     color: "#4A5568",
     marginLeft: 6,
+    lineHeight: 18,
+    flexShrink: 1,
   },
   statusBadge: {
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#4A90E2",
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 14,
+    elevation: 1,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    maxWidth: 120,
   },
   statusText: {
     color: "#FFFFFF",
     fontSize: 12,
     fontWeight: "600",
     marginLeft: 4,
+    textAlign: 'center',
   },
   progressSection: {
     backgroundColor: "#F8F9FA",
@@ -870,39 +931,58 @@ const styles = StyleSheet.create({
   cardFooter: {
     flexDirection: "row",
     justifyContent: "flex-end",
+    marginTop: 4,
   },
   actionsRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 12,
+    gap: 6,
+    flexWrap: 'wrap',
+    justifyContent: 'flex-end',
+    maxWidth: '100%',
   },
   actionBtn: {
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#FFEAEA",
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 5,
+    borderRadius: 6,
+    minWidth: 72,
+    maxWidth: 90,
+    justifyContent: 'center',
   },
   primaryActionBtn: {
     backgroundColor: "#FFEAEA",
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 8,
   },
   actionText: {
-    fontSize: 14,
+    fontSize: 11,
     color: "#FF6B6B",
     fontWeight: "600",
-    marginLeft: 6,
+    marginLeft: 3,
+    textAlign: 'center',
+    flexShrink: 1,
   },
   secondaryActionBtn: {
     backgroundColor: "#E8F7E8",
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 8,
   },
   secondaryActionText: {
+    color: "#2ED573",
+    fontWeight: "600",
+  },
+  giftActionBtn: {
+    backgroundColor: "#F3E8FF",
+  },
+  giftActionText: {
+    color: "#8B5CF6",
+    fontWeight: "600",
+  },
+  giftCompletedBtn: {
+    backgroundColor: "#E8F7E8",
+    borderWidth: 1,
+    borderColor: "#2ED573",
+  },
+  giftCompletedText: {
     color: "#2ED573",
     fontWeight: "600",
   },

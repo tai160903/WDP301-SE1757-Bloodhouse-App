@@ -77,7 +77,7 @@ export default function ScannerScreen({ route, navigation }) {
         navigation.navigate('HealthChecks', { refresh: true });
       } else {
         // Nurse: Navigate về DonorListScreen
-        navigation.navigate('DonorList', { refresh: true });
+      navigation.navigate('DonorList', { refresh: true });
       }
     } else {
       // Nếu từ screen khác, goBack
@@ -114,17 +114,17 @@ export default function ScannerScreen({ route, navigation }) {
       handleSmartScan(data);
     } else {
       // Legacy modes for specific purposes
-      switch (mode) {
-        case 'donor':
-          handleDonorScan(data);
-          break;
-        case 'gift':
-          handleGiftScan(data);
-          break;
-        case 'blood':
-          handleBloodScan(data);
-          break;
-        default:
+    switch (mode) {
+      case 'donor':
+        handleDonorScan(data);
+        break;
+      case 'gift':
+        handleGiftScan(data);
+        break;
+      case 'blood':
+        handleBloodScan(data);
+        break;
+      default:
           handleSmartScan(data);
       }
     }
@@ -193,26 +193,26 @@ export default function ScannerScreen({ route, navigation }) {
   };
 
   const handleDoctorQRScan = async (qrData) => {
-    try {
+              try {
           // Doctor uses existing doctor QR scan API
-    const response = await bloodDonationRegistrationAPI.HandleBloodDonationRegistration(
+                const response = await bloodDonationRegistrationAPI.HandleBloodDonationRegistration(
       '/doctor/qr-scan',
-      { qrData: qrData },
-      'post'
-    );
+                  { qrData: qrData },
+                  'post'
+                );
 
-    if (response.success || response.data) {
+                if (response.success || response.data) {
       const healthCheckData = response.data;
       
       const patientName = healthCheckData.userId?.fullName || 'Không xác định';
       const doctorName = healthCheckData.doctorId?.userId?.fullName || 'Không xác định';
       const code = healthCheckData.code || 'Không có mã';
       
-      Alert.alert(
+                  Alert.alert(
         'THÔNG TIN HEALTH CHECK',
         `Mã phiếu khám: ${code}\nBệnh nhân: ${patientName}\nBác sĩ phụ trách: ${doctorName}\n\nBạn có muốn xem chi tiết phiếu khám?`,
-        [
-          {
+                    [
+                      {
             text: 'ĐÓNG',
             style: 'cancel',
             onPress: () => {
@@ -222,16 +222,16 @@ export default function ScannerScreen({ route, navigation }) {
           },
           {
             text: 'XEM CHI TIẾT',
-            onPress: () => {
+                        onPress: () => {
               navigation.navigate('HealthCheckUpdate', { 
                 healthCheckId: healthCheckData._id,
                 registrationId: healthCheckData.registrationId 
               });
-            },
-          },
-        ]
-      );
-    } else {
+                        },
+                      },
+                    ]
+                  );
+                } else {
       throw new Error('Không thể lấy thông tin health check');
     }
     } catch (error) {
@@ -275,7 +275,7 @@ export default function ScannerScreen({ route, navigation }) {
               onPress: () => {
                 setScanned(false);
                 setProcessing(false);
-              }
+                }
             },
             {
               text: actionData?.buttonText || 'CHECK-IN',
@@ -336,13 +336,13 @@ export default function ScannerScreen({ route, navigation }) {
           donationMessage += `\n\nKết quả khám: ${eligibilityText}\nBác sĩ: ${doctorName}`;
         }
         
-        Alert.alert(
+                Alert.alert(
           'BẮT ĐẦU HIẾN MÁU',
           donationMessage,
-          [
-            { 
+                  [
+                    {
               text: 'ĐÓNG', 
-              style: 'cancel',
+                      style: 'cancel',
               onPress: () => {
                 setScanned(false);
                 setProcessing(false);
@@ -408,8 +408,8 @@ export default function ScannerScreen({ route, navigation }) {
                 }
               }
             }
-          ]
-        );
+                  ]
+                );
         break;
         
       case 'view_completed':
@@ -553,8 +553,8 @@ export default function ScannerScreen({ route, navigation }) {
                 handleNavigationAfterSuccess();
               }
             }
-          ]
-        );
+        ]
+      );
       }
     } catch (error) {
       console.error('Check-in error:', error);
@@ -704,8 +704,8 @@ export default function ScannerScreen({ route, navigation }) {
           <MaterialIcons name="camera-off" size={64} color="#FF6B6B" />
           <Text style={styles.errorText}>Không có quyền truy cập camera</Text>
           <Text style={styles.errorSubText}>Vui lòng cấp quyền camera để sử dụng tính năng quét QR</Text>
-          <TouchableOpacity
-            style={styles.button}
+        <TouchableOpacity
+          style={styles.button}
             onPress={retryCameraPermission}
           >
             <MaterialIcons name="refresh" size={20} color="#FFFFFF" />
@@ -713,11 +713,11 @@ export default function ScannerScreen({ route, navigation }) {
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.button, styles.secondaryButton]}
-            onPress={() => handleNavigationAfterSuccess()}
-          >
+          onPress={() => handleNavigationAfterSuccess()}
+        >
             <MaterialIcons name="arrow-back" size={20} color="#FF6B6B" />
             <Text style={[styles.buttonText, styles.secondaryButtonText]}>Quay lại</Text>
-          </TouchableOpacity>
+        </TouchableOpacity>
         </View>
       </SafeAreaView>
     );
@@ -811,13 +811,13 @@ export default function ScannerScreen({ route, navigation }) {
               ? userRole === 'doctor'
                 ? 'Đặt QR code vào khung - Hệ thống sẽ phân tích cho Bác Sĩ'
                 : 'Đặt QR code vào khung - Hệ thống sẽ phân tích cho Y Tá'
-                : mode === 'donor'
-                ? 'Đặt mã định danh người hiến vào khung hình'
-                : mode === 'gift'
-                ? 'Đặt mã định danh người nhận quà vào khung hình'
-                : mode === 'blood'
-                ? 'Đặt mã đơn vị máu vào khung hình'
-                : 'Đặt mã đăng ký vào khung hình'}
+              : mode === 'donor'
+              ? 'Đặt mã định danh người hiến vào khung hình'
+              : mode === 'gift'
+              ? 'Đặt mã định danh người nhận quà vào khung hình'
+              : mode === 'blood'
+              ? 'Đặt mã đơn vị máu vào khung hình'
+              : 'Đặt mã đăng ký vào khung hình'}
           </Text>
         </View>
 

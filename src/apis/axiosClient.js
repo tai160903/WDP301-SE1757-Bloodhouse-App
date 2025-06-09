@@ -7,7 +7,7 @@ import { toast } from "sonner-native";
 
 // export const BASE_URL = "http://10.87.63.189:3000/api/v1"; // Thay x bằng số thích hợp
 // export const BASE_URL = "http://192.168.100.23:3000/api/v1"; // Thay x bằng số thích hợp
-export const BASE_URL = "http://192.168.100.23:3000/api/v1"; // Thay x bằng số thích hợp
+export const BASE_URL = "http://192.168.100.62:3000/api/v1"; // Thay x bằng số thích hợp
 
 
 const getAccessToken = async () => {
